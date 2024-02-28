@@ -1,0 +1,36 @@
+V = 150;
+L = 3;
+R = 30;
+i0 = 0;
+t0 = 0;
+tf = 1;
+h = 0.05;
+t = t0:h:tf;
+i_euler = zeros(size(t));
+i_rk2 = zeros(size(t));
+i_rk4 = zeros(size(t));
+i_euler(1) = i0;
+i_rk2(1) = i0;
+i_rk4(1) = i0;
+for n = 1:length(t)-1
+ di_dt = (V/L) - (R/L) * i_euler(n);
+ i_euler(n+1) = i_euler(n) + h * di_dt;
+end
+for n = 1:length(t)-1
+ k1 = (V/L) - (R/L) * i_rk2(n);
+ k2 = (V/L) - (R/L) * (i_rk2(n) + h/2 * k1);
+ i_rk2(n+1) = i_rk2(n) + h * k2;
+end
+for n = 1:length(t)-1
+ k1 = (V/L) - (R/L) * i_rk4(n);
+ k2 = (V/L) - (R/L) * (i_rk4(n) + h/2 * k1);
+ k3 = (V/L) - (R/L) * (i_rk4(n) + h/2 * k2);
+ k4 = (V/L) - (R/L) * (i_rk4(n) + h * k3);
+ i_rk4(n+1) = i_rk4(n) + h/6 * (k1 + 2*k2 + 2*k3 + k4);
+end
+i_analytical = 5 * (1 - exp(-10 * t));
+fprintf('t\tSolução Analítica\tEuler\t2ª Ordem\t4ª Ordem\n');
+for n = 1:length(t)
+ fprintf('%.2f\t%.6f\t%.6f\t%.6f\t%.6f\n', t(n), i_analytical(n), i_euler(n), i_rk2(n),
+i_rk4(n));
+end
